@@ -3,14 +3,29 @@
 <h2>Campaign Groups</h2>
 {% for group in groups %}
     <div class="group">
-        <h3>{{ group.name }}</h3>
+        <h3>
+            <i class="material-icons">folder</i>
+            {{ group.name }}
+            <a href="{{ url_for('group_dashboard', group_id=group.id) }}">
+                <i class="material-icons">dashboard</i> View Dashboard
+            </a>
+        </h3>
+        {% if group.powerbi_link %}
+            <p><strong>Power BI Report:</strong> <a href="{{ group.powerbi_link }}" target="_blank">Open Report</a></p>
+        {% else %}
+            <p><em>No Power BI report linked</em></p>
+        {% endif %}
         <ul>
             {% for campaign in group.campaigns %}
                 <li>
+                    <i class="material-icons">campaign</i>
                     {{ campaign.name }} ({{ campaign.product.name }})
                     <ul>
                         {% for conversion in campaign.conversions %}
-                            <li>{{ conversion.action }} ({{ conversion.product.name }})</li>
+                            <li>
+                                <i class="material-icons">trending_up</i>
+                                {{ conversion.action }} ({{ conversion.product.name }})
+                            </li>
                         {% endfor %}
                     </ul>
                 </li>
@@ -18,4 +33,5 @@
         </ul>
     </div>
 {% endfor %}
+<a href="{{ url_for('add_group') }}" class="btn btn-primary">Add New Group</a>
 {% endblock %}

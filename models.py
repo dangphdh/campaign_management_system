@@ -5,12 +5,14 @@ db = SQLAlchemy()
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    campaigns = db.relationship('Campaign', backref='product', lazy=True)
 
 class Conversion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     action = db.Column(db.String(100), nullable=False)
     campaign_id = db.Column(db.Integer, db.ForeignKey('campaign.id'), nullable=False)
+    product = db.relationship('Product', backref='conversions', lazy=True)
 
 class Campaign(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -23,4 +25,5 @@ class Campaign(db.Model):
 class CampaignGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    powerbi_link = db.Column(db.String(500), nullable=True)
     campaigns = db.relationship('Campaign', backref='group', lazy=True)

@@ -1,9 +1,51 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Add Campaign Group</h2>
+<h2>{% if group %}Edit{% else %}Add{% endif %} Campaign Group</h2>
 <form method="POST">
     <label for="name">Group Name:</label>
-    <input type="text" id="name" name="name" required>
-    <button type="submit">Add Group</button>
+    <input type="text" id="name" name="name" required {% if group %}value="{{ group.name }}"{% endif %}>
+    
+    <label for="powerbi_link">Power BI Report Link:</label>
+    <input type="url" id="powerbi_link" name="powerbi_link" {% if group %}value="{{ group.powerbi_link }}"{% endif %}>
+    
+    {% if group %}
+    <h3>Campaigns in this group:</h3>
+    <ul>
+        {% for campaign in group.campaigns %}
+        <li>{{ campaign.name }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    <button type="submit" name="action" value="{% if group %}update{% else %}add{% endif %}_group">
+        {% if group %}Update{% else %}Add{% endif %} Group
+    </button>
 </form>
+
+{% if group %}
+<h3>Add Campaign to Group</h3>
+<form method="POST">
+    <label for="campaign_name">Campaign Name:</label>
+    <input type="text" id="campaign_name" name="campaign_name" required>
+    
+    <label for="product_name">Product Name:</label>
+    <input type="text" id="product_name" name="product_name" required>
+    
+    <label for="target_audience">Target Audience:</label>
+    <input type="text" id="target_audience" name="target_audience" required>
+    
+    <button type="submit" name="action" value="add_campaign">Add Campaign</button>
+</form>
+{% endif %}
+
+{% if not group %}
+<h2>Edit Existing Groups</h2>
+<ul>
+    {% for group in groups %}
+    <li>
+        <a href="{{ url_for('edit_group', group_id=group.id) }}">{{ group.name }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}

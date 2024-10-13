@@ -4,20 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaign Management System</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Campaign Management System</h1>
-        <nav>
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('add_group') }}">Add Group</a>
-            <a href="{{ url_for('add_campaign') }}">Add Campaign</a>
-            <a href="{{ url_for('add_conversion') }}">Add Conversion</a>
-        </nav>
-    </header>
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+                <h1>CMS</h1>
+            </div>
+            <nav>
+                <a href="{{ url_for('index') }}"><i class="material-icons">home</i> Home</a>
+                <a href="{{ url_for('add_group') }}"><i class="material-icons">group_add</i> Add Group</a>
+                <a href="{{ url_for('add_campaign') }}"><i class="material-icons">add_circle</i> Add Campaign</a>
+                <a href="{{ url_for('add_conversion') }}"><i class="material-icons">trending_up</i> Add Conversion</a>
+                <a href="{{ url_for('add_product') }}"><i class="material-icons">inventory</i> Manage Products</a>
+            </nav>
+        </aside>
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
 </body>
 </html>

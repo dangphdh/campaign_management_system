@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>{% if product %}Edit{% else %}Add{% endif %} Product</h2>
+<form method="POST">
+    <label for="name">Product Name:</label>
+    <input type="text" id="name" name="name" required {% if product %}value="{{ product.name }}"{% endif %}>
+    
+    <button type="submit">{% if product %}Update{% else %}Add{% endif %} Product</button>
+</form>
+
+{% if not product %}
+<h2>Existing Products</h2>
+<ul>
+    {% for product in products %}
+    <li>
+        <a href="{{ url_for('edit_product', product_id=product.id) }}">{{ product.name }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

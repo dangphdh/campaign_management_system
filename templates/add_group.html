@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Add Campaign Group</h2>
+<form method="POST">
+    <label for="name">Group Name:</label>
+    <input type="text" id="name" name="name" required>
+    <button type="submit">Add Group</button>
+</form>
+{% endblock %}

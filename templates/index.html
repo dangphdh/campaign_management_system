@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Campaign Groups</h2>
+{% for group in groups %}
+    <div class="group">
+        <h3>{{ group.name }}</h3>
+        <ul>
+            {% for campaign in group.campaigns %}
+                <li>
+                    {{ campaign.name }} ({{ campaign.product.name }})
+                    <ul>
+                        {% for conversion in campaign.conversions %}
+                            <li>{{ conversion.action }} ({{ conversion.product.name }})</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endfor %}
+{% endblock %}

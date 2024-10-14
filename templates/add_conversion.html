@@ -10,8 +10,9 @@
     
     <label for="campaign_id">Campaign:</label>
     <select id="campaign_id" name="campaign_id" required>
+        <option value="" disabled selected>Select a campaign</option>
         {% for campaign in campaigns %}
-            <option value="{{ campaign.id }}">{{ campaign.name }}</option>
+            <option value="{{ campaign._id }}">{{ campaign.name }}</option>
         {% endfor %}
     </select>
     

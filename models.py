@@ -1,29 +1,61 @@
-from flask_sqlalchemy import SQLAlchemy
+from bson import ObjectId
 
-db = SQLAlchemy()
+class Product:
+    def __init__(self, name, _id=None):
+        self._id = _id or ObjectId()
+        self.name = name
 
-class Product(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    campaigns = db.relationship('Campaign', backref='product', lazy=True)
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            name=data['name'],
+            _id=data.get('_id')
+        )
 
-class Conversion(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-    action = db.Column(db.String(100), nullable=False)
-    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign.id'), nullable=False)
-    product = db.relationship('Product', backref='conversions', lazy=True)
+class Conversion:
+    def __init__(self, product_id, action, campaign_id, _id=None):
+        self._id = _id or ObjectId()
+        self.product_id = product_id
+        self.action = action
+        self.campaign_id = campaign_id
 
-class Campaign(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-    target_audience = db.Column(db.String(100), nullable=False)
-    group_id = db.Column(db.Integer, db.ForeignKey('campaign_group.id'), nullable=False)
-    conversions = db.relationship('Conversion', backref='campaign', lazy=True)
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            product_id=data['product_id'],
+            action=data['action'],
+            campaign_id=data['campaign_id'],
+            _id=data.get('_id')
+        )
 
-class CampaignGroup(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    powerbi_link = db.Column(db.String(500), nullable=True)
-    campaigns = db.relationship('Campaign', backref='group', lazy=True)
+class Campaign:
+    def __init__(self, name, product_id, target_audience, group_id, _id=None):
+        self._id = _id or ObjectId()
+        self.name = name
+        self.product_id = product_id
+        self.target_audience = target_audience
+        self.group_id = group_id
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            name=data['name'],
+            product_id=data['product_id'],
+            target_audience=data['target_audience'],
+            group_id=data['group_id'],
+            _id=data.get('_id')
+        )
+
+class CampaignGroup:
+    def __init__(self, name, powerbi_link=None, _id=None):
+        self._id = _id or ObjectId()
+        self.name = name
+        self.powerbi_link = powerbi_link
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            name=data['name'],
+            powerbi_link=data.get('powerbi_link'),
+            _id=data.get('_id')
+        )

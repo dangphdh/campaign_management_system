@@ -43,7 +43,7 @@
 <ul>
     {% for group in groups %}
     <li>
-        <a href="{{ url_for('edit_group', group_id=group.id) }}">{{ group.name }}</a>
+        <a href="{{ url_for('edit_group', group_id=group._id) }}">{{ group.name }}</a>
     </li>
     {% endfor %}
 </ul>

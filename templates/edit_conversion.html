@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Edit Conversion</h2>
+<form method="POST">
+    <label for="product">Product:</label>
+    <input type="text" id="product" name="product" value="{{ conversion.product.name }}" required>
+    
+    <label for="action">Action:</label>
+    <input type="text" id="action" name="action" value="{{ conversion.action }}" required>
+    
+    <label for="campaign_id">Campaign:</label>
+    <select id="campaign_id" name="campaign_id" required>
+        <option value="" disabled>Select a campaign</option>
+        {% for campaign in campaigns %}
+            <option value="{{ campaign._id }}" {% if campaign._id == conversion.campaign_id %}selected{% endif %}>{{ campaign.name }}</option>
+        {% endfor %}
+    </select>
+    
+    <button type="submit">Update Conversion</button>
+</form>
+{% endblock %}

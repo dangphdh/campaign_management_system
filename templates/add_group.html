@@ -1,51 +1,72 @@
 {% extends "layout.html" %}
+{% block page_class %}{% if group %}edit-group-page{% else %}add-group-page{% endif %}{% endblock %}
 {% block content %}
-<h2>{% if group %}Edit{% else %}Add{% endif %} Campaign Group</h2>
-<form method="POST">
-    <label for="name">Group Name:</label>
-    <input type="text" id="name" name="name" required {% if group %}value="{{ group.name }}"{% endif %}>
-    
-    <label for="powerbi_link">Power BI Report Link:</label>
-    <input type="url" id="powerbi_link" name="powerbi_link" {% if group %}value="{{ group.powerbi_link }}"{% endif %}>
-    
-    {% if group %}
-    <h3>Campaigns in this group:</h3>
-    <ul>
-        {% for campaign in group.campaigns %}
-        <li>{{ campaign.name }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    
-    <button type="submit" name="action" value="{% if group %}update{% else %}add{% endif %}_group">
-        {% if group %}Update{% else %}Add{% endif %} Group
-    </button>
-</form>
+<div class="mat-card">
+    <h2 class="mat-h2"><i class="material-icons">{% if group %}edit{% else %}add_circle{% endif %}</i> {% if group %}Edit{% else %}Add{% endif %} Campaign Group</h2>
+    <form method="POST" class="mat-form">
+        <div class="form-field">
+            <label for="name" class="mat-label">Group Name</label>
+            <input type="text" id="name" name="name" required class="mat-input" {% if group %}value="{{ group.name }}"{% endif %}>
+        </div>
+        
+        <div class="form-field">
+            <label for="powerbi_link" class="mat-label">Power BI Report Link</label>
+            <input type="url" id="powerbi_link" name="powerbi_link" class="mat-input" {% if group %}value="{{ group.powerbi_link }}"{% endif %}>
+        </div>
+        
+        {% if group %}
+        <h3 class="mat-h3">Campaigns in this group:</h3>
+        <ul class="mat-list">
+            {% for campaign in group.campaigns %}
+            <li class="mat-list-item">{{ campaign.name }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        <button type="submit" name="action" value="{% if group %}update{% else %}add{% endif %}_group" class="mat-button mat-button-primary">
+            <i class="material-icons">{% if group %}update{% else %}add{% endif %}</i> {% if group %}Update{% else %}Add{% endif %} Group
+        </button>
+    </form>
+</div>
 
 {% if group %}
-<h3>Add Campaign to Group</h3>
-<form method="POST">
-    <label for="campaign_name">Campaign Name:</label>
-    <input type="text" id="campaign_name" name="campaign_name" required>
-    
-    <label for="product_name">Product Name:</label>
-    <input type="text" id="product_name" name="product_name" required>
-    
-    <label for="target_audience">Target Audience:</label>
-    <input type="text" id="target_audience" name="target_audience" required>
-    
-    <button type="submit" name="action" value="add_campaign">Add Campaign</button>
-</form>
+<div class="mat-card">
+    <h3 class="mat-h3"><i class="material-icons">add_circle</i> Add Campaign to Group</h3>
+    <form method="POST" class="mat-form">
+        <div class="form-field">
+            <label for="campaign_name" class="mat-label">Campaign Name</label>
+            <input type="text" id="campaign_name" name="campaign_name" required class="mat-input">
+        </div>
+        
+        <div class="form-field">
+            <label for="product_name" class="mat-label">Product Name</label>
+            <input type="text" id="product_name" name="product_name" required class="mat-input">
+        </div>
+        
+        <div class="form-field">
+            <label for="target_audience" class="mat-label">Target Audience</label>
+            <input type="text" id="target_audience" name="target_audience" required class="mat-input">
+        </div>
+        
+        <button type="submit" name="action" value="add_campaign" class="mat-button mat-button-secondary">
+            <i class="material-icons">add</i> Add Campaign
+        </button>
+    </form>
+</div>
 {% endif %}
 
 {% if not group %}
-<h2>Edit Existing Groups</h2>
-<ul>
-    {% for group in groups %}
-    <li>
-        <a href="{{ url_for('edit_group', group_id=group.id) }}">{{ group.name }}</a>
-    </li>
-    {% endfor %}
-</ul>
+<div class="mat-card">
+    <h2 class="mat-h2"><i class="material-icons">edit</i> Edit Existing Groups</h2>
+    <ul class="mat-list">
+        {% for group in groups %}
+        <li class="mat-list-item">
+            <a href="{{ url_for('edit_group', group_id=group.id) }}" class="mat-button">
+                <i class="material-icons">folder</i> {{ group.name }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endif %}
 {% endblock %}

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block page_class %}edit-campaign-page{% endblock %}
+{% block content %}
+<div class="mat-card">
+    <h2 class="mat-h2"><i class="material-icons">edit</i> Edit Campaign</h2>
+    <form method="POST" class="mat-form">
+        <div class="form-field">
+            <label for="name" class="mat-label">Campaign Name</label>
+            <input type="text" id="name" name="name" required class="mat-input" value="{{ campaign.name }}">
+        </div>
+        
+        <div class="form-field">
+            <label for="product" class="mat-label">Product</label>
+            <input type="text" id="product" name="product" required class="mat-input" value="{{ campaign.product.name }}">
+        </div>
+        
+        <div class="form-field">
+            <label for="target_audience" class="mat-label">Target Audience</label>
+            <input type="text" id="target_audience" name="target_audience" required class="mat-input" value="{{ campaign.target_audience }}">
+        </div>
+        
+        <div class="form-field">
+            <label for="group_id" class="mat-label">Campaign Group</label>
+            <select id="group_id" name="group_id" required class="mat-select">
+                {% for group in groups %}
+                    <option value="{{ group.id }}" {% if group.id == campaign.group_id %}selected{% endif %}>{{ group.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit" class="mat-button mat-button-primary">
+            <i class="material-icons">save</i> Update Campaign
+        </button>
+    </form>
+</div>
+{% endblock %}

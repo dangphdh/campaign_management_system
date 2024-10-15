@@ -1,13 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 :root {
-    --primary-color: #3498db;
-    --primary-light: #5dade2;
-    --primary-dark: #2980b9;
-    --accent-color: #e74c3c;
-    --text-color: #333333;
-    --background-color: #ecf0f1;
+    --primary-color: #3f51b5;
+    --primary-light: #757de8;
+    --primary-dark: #002984;
+    --secondary-color: #ff4081;
+    --secondary-light: #ff79b0;
+    --secondary-dark: #c60055;
+    --background-color: #f5f5f5;
     --surface-color: #ffffff;
+    --error-color: #b00020;
+    --on-primary: #ffffff;
+    --on-secondary: #000000;
+    --on-background: #000000;
+    --on-surface: #000000;
+    --on-error: #ffffff;
 }
 
 body {
@@ -15,8 +22,8 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, var(--background-color) 0%, #bdc3c7 100%);
-    color: var(--text-color);
+    background-color: var(--background-color);
+    color: var(--on-background);
     min-height: 100vh;
 }
 
@@ -27,9 +34,9 @@ body {
 
 .sidebar {
     width: 250px;
-    background-color: var(--surface-color);
+    background-color: var(--primary-color);
     padding: 2rem;
-    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
 
 .logo {
@@ -39,8 +46,8 @@ body {
 }
 
 .logo img {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 60px;
     margin-right: 1rem;
     transition: transform 0.3s ease;
 }
@@ -50,9 +57,9 @@ body {
 }
 
 .logo h1 {
-    font-size: 1.5rem;
+    font-size: 2.0rem;
     font-weight: 500;
-    color: var(--primary-color);
+    color: var(--on-primary);
 }
 
 nav {
@@ -61,7 +68,7 @@ nav {
 }
 
 nav a {
-    color: var(--text-color);
+    color: var(--on-primary);
     text-decoration: none;
     padding: 0.5rem 0;
     margin: 0.5rem 0;
@@ -77,14 +84,14 @@ nav a::after {
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: var(--primary-color);
+    background-color: var(--secondary-color);
     transform: scaleX(0);
     transform-origin: right;
     transition: transform 0.3s ease;
 }
 
 nav a:hover {
-    color: var(--primary-color);
+    color: var(--secondary-color);
 }
 
 nav a:hover::after {
@@ -95,13 +102,23 @@ nav a:hover::after {
 main {
     flex-grow: 1;
     padding: 2rem;
+    background-color: var(--background-color);
+}
+
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .page-header {
     margin-bottom: 2rem;
 }
 
-h2, h3, h4 {
+.mat-h2, .mat-h3, .mat-h4 {
     color: var(--primary-color);
     font-weight: 500;
     margin-bottom: 1rem;
@@ -109,61 +126,121 @@ h2, h3, h4 {
     display: inline-block;
 }
 
-h2::after, h3::after {
+.mat-h2::after, .mat-h3::after {
     content: '';
     position: absolute;
     bottom: -5px;
     left: 0;
     width: 50px;
     height: 3px;
-    background-color: var(--accent-color);
+    background-color: var(--secondary-color);
+}
+
+.mat-body-1 {
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.mat-body-2 {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.mat-caption {
+    font-size: 0.75rem;
+    font-weight: 400;
 }
 
 .intro-text {
     font-size: 1.1rem;
-    color: var(--text-color);
+    color: var(--on-background);
     max-width: 800px;
     margin-bottom: 2rem;
 }
 
-.campaign-groups {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+.mat-card {
+    background-color: var(--surface-color);
+    border-radius: 4px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.14), 0 1px 3px 0 rgba(0,0,0,0.12);
+    margin-bottom: 2rem;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.mat-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.mat-table th, .mat-table td {
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.mat-table th {
+    font-weight: 500;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.mat-table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-badge.active {
+    background-color: var(--secondary-color);
+    color: var(--on-secondary);
+}
+
+.status-badge.inactive {
+    background-color: var(--error-color);
+    color: var(--on-error);
+}
+
+.btn-icon {
+    padding: 0.5rem;
+    margin: 0 0.25rem;
 }
 
 .group {
-    background-color: var(--surface-color);
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 1.5rem;
 }
 
-.group:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.group-header {
+.mat-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
 }
 
-.group-header h4 {
+.mat-card-header .mat-h4 {
     margin: 0;
     display: flex;
     align-items: center;
 }
 
-.group-header h4 i {
+.mat-card-header .mat-h4 .mat-icon {
     margin-right: 0.5rem;
-    color: var(--accent-color);
+    color: var(--secondary-color);
 }
 
-.btn {
+.mat-button {
     display: inline-flex;
     align-items: center;
     padding: 0.5rem 1rem;
@@ -171,15 +248,26 @@ h2::after, h3::after {
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
 }
 
-.btn-secondary {
-    background-color: var(--primary-light);
-    color: white;
-}
-
-.btn-secondary:hover {
+.mat-button-primary {
     background-color: var(--primary-color);
+    color: var(--on-primary);
+}
+
+.mat-button-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.mat-button-secondary {
+    background-color: var(--secondary-color);
+    color: var(--on-secondary);
+}
+
+.mat-button-secondary:hover {
+    background-color: var(--secondary-dark);
 }
 
 .powerbi-link {
@@ -194,27 +282,27 @@ h2::after, h3::after {
     color: var(--primary-dark);
 }
 
-.powerbi-link i {
+.powerbi-link .mat-icon {
     margin-right: 0.25rem;
 }
 
-.campaign-list, .conversion-list {
+.mat-list {
     list-style-type: none;
     padding-left: 0;
 }
 
-.campaign-item, .conversion-item {
+.mat-list-item {
     margin-bottom: 0.5rem;
     transition: transform 0.2s ease;
     display: flex;
     align-items: center;
 }
 
-.campaign-item:hover, .conversion-item:hover {
+.mat-list-item:hover {
     transform: translateX(5px);
 }
 
-.campaign-item i, .conversion-item i {
+.mat-list-item .mat-icon {
     margin-right: 0.5rem;
     color: var(--primary-color);
 }
@@ -225,7 +313,7 @@ h2::after, h3::after {
 }
 
 .campaign-product, .conversion-product {
-    color: var(--text-color);
+    color: var(--on-surface);
     opacity: 0.7;
 }
 
@@ -234,26 +322,87 @@ h2::after, h3::after {
 }
 
 .action-button {
-    margin-top: 2rem;
-    text-align: center;
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
 }
 
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    font-size: 1.1rem;
+.mat-fab {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--secondary-color);
+    color: var(--on-secondary);
+    box-shadow: 0 3px 5px -1px rgba(0,0,0,0.2), 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12);
+    transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+.mat-fab:hover {
+    background-color: var(--secondary-dark);
+    box-shadow: 0 5px 5px -3px rgba(0,0,0,0.2), 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12);
 }
 
-.material-icons {
-    vertical-align: middle;
-    margin-right: 0.25rem;
+.mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    overflow: hidden;
+}
+
+/* Form styles */
+.mat-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.mat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.mat-input, .mat-select {
+    padding: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.mat-input:focus, .mat-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Background patterns for different pages */
+.add-campaign-page {
+    background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.add-conversion-page {
+    background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
+}
+
+.edit-campaign-page {
+    background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);
+}
+
+.add-group-page {
+    background-image: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+}
+
+.edit-group-page {
+    background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
 }
 
 /* Add a subtle tech-inspired background pattern */
@@ -267,46 +416,41 @@ body::before {
     opacity: 0.05;
     z-index: -1;
     background-image: 
-        linear-gradient(30deg, #000000 12%, transparent 12.5%, transparent 87%, #000000 87.5%, #000000),
-        linear-gradient(150deg, #000000 12%, transparent 12.5%, transparent 87%, #000000 87.5%, #000000),
-        linear-gradient(30deg, #000000 12%, transparent 12.5%, transparent 87%, #000000 87.5%, #000000),
-        linear-gradient(150deg, #000000 12%, transparent 12.5%, transparent 87%, #000000 87.5%, #000000),
-        linear-gradient(60deg, #77777777 25%, transparent 25.5%, transparent 75%, #77777777 75%, #77777777), 
-        linear-gradient(60deg, #77777777 25%, transparent 25.5%, transparent 75%, #77777777 75%, #77777777);
-    background-size: 80px 140px;
-    background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+        radial-gradient(var(--primary-color) 2px, transparent 2px),
+        radial-gradient(var(--secondary-color) 2px, transparent 2px);
+    background-size: 60px 60px;
+    background-position: 0 0, 30px 30px;
 }
 
 /* Add a glowing effect to buttons on hover */
-.btn:hover {
-    box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+.mat-button:hover, .mat-fab:hover {
+    box-shadow: 0 0 15px rgba(63, 81, 181, 0.5);
 }
 
 /* Add a subtle animation to icons */
-.material-icons {
+.mat-icon {
     transition: transform 0.3s ease;
 }
 
-.btn:hover .material-icons,
-.campaign-item:hover .material-icons,
-.conversion-item:hover .material-icons {
+.mat-button:hover .mat-icon,
+.mat-list-item:hover .mat-icon {
     transform: scale(1.2);
 }
 
 /* Add a pulsing animation to the Add New Group button */
 @keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4);
+        box-shadow: 0 0 0 0 rgba(255, 64, 129, 0.4);
     }
     70% {
-        box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+        box-shadow: 0 0 0 10px rgba(255, 64, 129, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+        box-shadow: 0 0 0 0 rgba(255, 64, 129, 0);
     }
 }
 
-.btn-primary {
+.mat-fab {
     animation: pulse 2s infinite;
 }
 
@@ -329,4 +473,37 @@ body::before {
     border: 2px solid var(--primary-color);
     border-top-color: transparent;
     animation: loading 1s linear infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .campaign-groups {
+        grid-template-columns: 1fr;
+    }
+
+    .action-button {
+        bottom: 1rem;
+        right: 1rem;
+    }
+
+    .mat-table {
+        font-size: 0.875rem;
+    }
+
+    .mat-table th, .mat-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .btn-icon {
+        padding: 0.25rem;
+    }
 }

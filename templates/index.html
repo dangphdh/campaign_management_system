@@ -1,53 +1,94 @@
 {% extends "layout.html" %}
+{% block page_class %}dashboard-page{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h2><i class="material-icons">dashboard</i> Campaign Management Dashboard</h2>
-    <p class="intro-text">Welcome to your centralized campaign management system. Organize, track, and optimize your marketing efforts with ease.</p>
+    <h2 class="mat-h2"><i class="material-icons">dashboard</i> Campaign Management Dashboard</h2>
+    <p class="intro-text mat-body-1">Welcome to your centralized campaign management system. Organize, track, and optimize your marketing efforts with ease.</p>
 </div>
 
-<div class="campaign-groups">
-    <h3><i class="material-icons">folder_shared</i> Campaign Groups</h3>
+<div class="mat-card">
+    <h3 class="mat-h3"><i class="material-icons">info</i> Campaign Information</h3>
+    <div class="table-container">
+        <table class="mat-table">
+            <thead>
+                <tr>
+                    <th>Campaign Name</th>
+                    <th>Group</th>
+                    <th>Product</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                    {% for campaign in group.campaigns %}
+                        <tr>
+                            <td>{{ campaign.name }}</td>
+                            <td>{{ group.name }}</td>
+                            <td>{{ campaign.product.name }}</td>
+                            <td>
+                                <span class="status-badge {% if campaign.active %}active{% else %}inactive{% endif %}">
+                                    {{ 'Active' if campaign.active else 'Inactive' }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('edit_campaign', campaign_id=campaign.id) }}" class="btn btn-icon mat-button">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mat-card">
+    <h3 class="mat-h3"><i class="material-icons">folder_shared</i> Campaign Groups</h3>
     {% for group in groups %}
-        <div class="group">
-            <div class="group-header">
-                <h4>
-                    <i class="material-icons">folder</i>
+        <div class="group mat-card">
+            <div class="group-header mat-card-header">
+                <h4 class="mat-h4">
+                    <i class="material-icons mat-icon">folder</i>
                     {{ group.name }}
                 </h4>
-                <a href="{{ url_for('group_dashboard', group_id=group.id) }}" class="btn btn-secondary">
+                <a href="{{ url_for('group_dashboard', group_id=group.id) }}" class="mat-button mat-button-secondary">
                     <i class="material-icons">dashboard</i> View Dashboard
                 </a>
             </div>
-            {% if group.powerbi_link %}
-                <p><strong>Power BI Report:</strong> <a href="{{ group.powerbi_link }}" target="_blank" class="powerbi-link"><i class="material-icons">bar_chart</i> Open Report</a></p>
-            {% else %}
-                <p><em><i class="material-icons">info</i> No Power BI report linked</em></p>
-            {% endif %}
-            <ul class="campaign-list">
-                {% for campaign in group.campaigns %}
-                    <li class="campaign-item">
-                        <i class="material-icons">campaign</i>
-                        <span class="campaign-name">{{ campaign.name }}</span>
-                        <span class="campaign-product">({{ campaign.product.name }})</span>
-                        <ul class="conversion-list">
-                            {% for conversion in campaign.conversions %}
-                                <li class="conversion-item">
-                                    <i class="material-icons">trending_up</i>
-                                    <span class="conversion-action">{{ conversion.action }}</span>
-                                    <span class="conversion-product">({{ conversion.product.name }})</span>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                {% endfor %}
-            </ul>
+            <div class="mat-card-content">
+                {% if group.powerbi_link %}
+                    <p class="mat-body-2"><strong>Power BI Report:</strong> <a href="{{ group.powerbi_link }}" target="_blank" class="powerbi-link mat-button"><i class="material-icons">bar_chart</i> Open Report</a></p>
+                {% else %}
+                    <p class="mat-body-2"><em><i class="material-icons">info</i> No Power BI report linked</em></p>
+                {% endif %}
+                <ul class="campaign-list mat-list">
+                    {% for campaign in group.campaigns %}
+                        <li class="campaign-item mat-list-item">
+                            <i class="material-icons mat-icon">campaign</i>
+                            <span class="campaign-name mat-body-2">{{ campaign.name }}</span>
+                            <span class="campaign-product mat-caption">({{ campaign.product.name }})</span>
+                            <ul class="conversion-list mat-list">
+                                {% for conversion in campaign.conversions %}
+                                    <li class="conversion-item mat-list-item">
+                                        <i class="material-icons mat-icon">trending_up</i>
+                                        <span class="conversion-action mat-body-2">{{ conversion.action }}</span>
+                                        <span class="conversion-product mat-caption">({{ conversion.product.name }})</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     {% endfor %}
 </div>
 
 <div class="action-button">
-    <a href="{{ url_for('add_group') }}" class="btn btn-primary">
-        <i class="material-icons">add_circle</i> Add New Group
+    <a href="{{ url_for('add_group') }}" class="mat-fab">
+        <i class="material-icons">add</i>
     </a>
 </div>
 {% endblock %}

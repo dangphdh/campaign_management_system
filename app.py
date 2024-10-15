@@ -73,6 +73,28 @@ def add_campaign():
     groups = CampaignGroup.query.all()
     return render_template('add_campaign.html', groups=groups)
 
+@app.route('/campaign/edit/<int:campaign_id>', methods=['GET', 'POST'])
+def edit_campaign(campaign_id):
+    campaign = Campaign.query.get_or_404(campaign_id)
+    if request.method == 'POST':
+        campaign.name = request.form['name']
+        product_name = request.form['product']
+        campaign.target_audience = request.form['target_audience']
+        campaign.group_id = request.form['group_id']
+        
+        product = Product.query.filter_by(name=product_name).first()
+        if not product:
+            product = Product(name=product_name)
+            db.session.add(product)
+            db.session.commit()
+        
+        campaign.product_id = product.id
+        db.session.commit()
+        return redirect(url_for('index'))
+    
+    groups = CampaignGroup.query.all()
+    return render_template('edit_campaign.html', campaign=campaign, groups=groups)
+
 @app.route('/group/dashboard/<int:group_id>')
 def group_dashboard(group_id):
     group = CampaignGroup.query.get_or_404(group_id)

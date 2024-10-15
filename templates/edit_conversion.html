@@ -1,30 +1,30 @@
 {% extends "layout.html" %}
-{% block page_class %}add-conversion-page{% endblock %}
+{% block page_class %}edit-conversion-page{% endblock %}
 {% block content %}
 <div class="mat-card">
-    <h2 class="mat-h2"><i class="material-icons">trending_up</i> Add Conversion</h2>
+    <h2 class="mat-h2"><i class="material-icons">edit</i> Edit Conversion</h2>
     <form method="POST" class="mat-form">
         <div class="form-field">
             <label for="product" class="mat-label">Product</label>
-            <input type="text" id="product" name="product" required class="mat-input">
+            <input type="text" id="product" name="product" required class="mat-input" value="{{ conversion.product.name }}">
         </div>
         
         <div class="form-field">
             <label for="action" class="mat-label">Action</label>
-            <input type="text" id="action" name="action" required class="mat-input">
+            <input type="text" id="action" name="action" required class="mat-input" value="{{ conversion.action }}">
         </div>
         
         <div class="form-field">
             <label for="campaign_id" class="mat-label">Campaign</label>
             <select id="campaign_id" name="campaign_id" required class="mat-select">
                 {% for campaign in campaigns %}
-                    <option value="{{ campaign.id }}">{{ campaign.name }}</option>
+                    <option value="{{ campaign.id }}" {% if campaign.id == conversion.campaign_id %}selected{% endif %}>{{ campaign.name }}</option>
                 {% endfor %}
             </select>
         </div>
         
         <button type="submit" class="mat-button mat-button-primary">
-            <i class="material-icons">save</i> Add Conversion
+            <i class="material-icons">save</i> Update Conversion
         </button>
     </form>
 </div>

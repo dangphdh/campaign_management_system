@@ -12,18 +12,21 @@
         <aside class="sidebar">
             <div class="logo">
                 <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-                <h1>CMS</h1>
+                <h1>Campalitica</h1>
             </div>
             <nav>
-                <a href="{{ url_for('index') }}"><i class="material-icons">home</i> Home</a>
+                <a href="{{ url_for('index') }}"><i class="material-icons">home </i> Homepage</a>
                 <a href="{{ url_for('add_group') }}"><i class="material-icons">group_add</i> Add Group</a>
-                <a href="{{ url_for('add_campaign') }}"><i class="material-icons">add_circle</i> Add Campaign</a>
+                <a href="{{ url_for('add_campaign') }}"><i class="material-icons">add_task</i> Add Campaign</a>
                 <a href="{{ url_for('add_conversion') }}"><i class="material-icons">trending_up</i> Add Conversion</a>
                 <a href="{{ url_for('add_product') }}"><i class="material-icons">inventory</i> Manage Products</a>
+                <a href="{{ url_for('index') }}"><i class="material-icons">groups_2</i>  Customer</a>
             </nav>
         </aside>
         <main>
-            {% block content %}{% endblock %}
+            <div class="page-container {% block page_class %}{% endblock %}">
+                {% block content %}{% endblock %}
+            </div>
         </main>
     </div>
 </body>

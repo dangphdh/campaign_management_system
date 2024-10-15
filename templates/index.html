@@ -1,37 +1,53 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Campaign Groups</h2>
-{% for group in groups %}
-    <div class="group">
-        <h3>
-            <i class="material-icons">folder</i>
-            {{ group.name }}
-            <a href="{{ url_for('group_dashboard', group_id=group.id) }}">
-                <i class="material-icons">dashboard</i> View Dashboard
-            </a>
-        </h3>
-        {% if group.powerbi_link %}
-            <p><strong>Power BI Report:</strong> <a href="{{ group.powerbi_link }}" target="_blank">Open Report</a></p>
-        {% else %}
-            <p><em>No Power BI report linked</em></p>
-        {% endif %}
-        <ul>
-            {% for campaign in group.campaigns %}
-                <li>
-                    <i class="material-icons">campaign</i>
-                    {{ campaign.name }} ({{ campaign.product.name }})
-                    <ul>
-                        {% for conversion in campaign.conversions %}
-                            <li>
-                                <i class="material-icons">trending_up</i>
-                                {{ conversion.action }} ({{ conversion.product.name }})
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endfor %}
-<a href="{{ url_for('add_group') }}" class="btn btn-primary">Add New Group</a>
+<div class="page-header">
+    <h2><i class="material-icons">dashboard</i> Campaign Management Dashboard</h2>
+    <p class="intro-text">Welcome to your centralized campaign management system. Organize, track, and optimize your marketing efforts with ease.</p>
+</div>
+
+<div class="campaign-groups">
+    <h3><i class="material-icons">folder_shared</i> Campaign Groups</h3>
+    {% for group in groups %}
+        <div class="group">
+            <div class="group-header">
+                <h4>
+                    <i class="material-icons">folder</i>
+                    {{ group.name }}
+                </h4>
+                <a href="{{ url_for('group_dashboard', group_id=group.id) }}" class="btn btn-secondary">
+                    <i class="material-icons">dashboard</i> View Dashboard
+                </a>
+            </div>
+            {% if group.powerbi_link %}
+                <p><strong>Power BI Report:</strong> <a href="{{ group.powerbi_link }}" target="_blank" class="powerbi-link"><i class="material-icons">bar_chart</i> Open Report</a></p>
+            {% else %}
+                <p><em><i class="material-icons">info</i> No Power BI report linked</em></p>
+            {% endif %}
+            <ul class="campaign-list">
+                {% for campaign in group.campaigns %}
+                    <li class="campaign-item">
+                        <i class="material-icons">campaign</i>
+                        <span class="campaign-name">{{ campaign.name }}</span>
+                        <span class="campaign-product">({{ campaign.product.name }})</span>
+                        <ul class="conversion-list">
+                            {% for conversion in campaign.conversions %}
+                                <li class="conversion-item">
+                                    <i class="material-icons">trending_up</i>
+                                    <span class="conversion-action">{{ conversion.action }}</span>
+                                    <span class="conversion-product">({{ conversion.product.name }})</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="action-button">
+    <a href="{{ url_for('add_group') }}" class="btn btn-primary">
+        <i class="material-icons">add_circle</i> Add New Group
+    </a>
+</div>
 {% endblock %}

@@ -5,8 +5,12 @@
     <h2 class="mat-h2"><i class="material-icons">trending_up</i> Add Conversion</h2>
     <form method="POST" class="mat-form">
         <div class="form-field">
-            <label for="product" class="mat-label">Product</label>
-            <input type="text" id="product" name="product" required class="mat-input">
+            <label for="product_id" class="mat-label">Product</label>
+            <select id="product_id" name="product_id" required class="mat-select">
+                {% for product in products %}
+                    <option value="{{ product.id }}">{{ product.name }}</option>
+                {% endfor %}
+            </select>
         </div>
         
         <div class="form-field">

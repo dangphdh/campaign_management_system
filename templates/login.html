@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block page_class %}login-page{% endblock %}
+{% block content %}
+<div class="mat-card">
+    <h2 class="mat-h2"><i class="material-icons">login</i> Login</h2>
+    <form method="POST" class="mat-form">
+        <div class="form-field">
+            <label for="username" class="mat-label">Username</label>
+            <input type="text" id="username" name="username" required class="mat-input">
+        </div>
+        
+        <div class="form-field">
+            <label for="password" class="mat-label">Password</label>
+            <input type="password" id="password" name="password" required class="mat-input">
+        </div>
+        
+        <button type="submit" class="mat-button mat-button-primary">
+            <i class="material-icons">login</i> Login
+        </button>
+    </form>
+</div>
+{% endblock %}

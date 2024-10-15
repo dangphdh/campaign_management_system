@@ -1,13 +1,68 @@
-from flask import Flask, render_template, request, redirect, url_for
-from models import db, Product, Conversion, Campaign, CampaignGroup
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_migrate import Migrate
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from models import db, User, Product, Conversion, Campaign, CampaignGroup
 from sqlalchemy.orm import joinedload
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///campaigns.db'
+app.config['SECRET_KEY'] = 'your_secret_key_here'  # Change this to a random secret key
 db.init_app(app)
+migrate = Migrate(app, db)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            login_user(user)
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid username or password')
+            return redirect(url_for('register'))
+    return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user:
+            flash('Username already exists. Please choose a different username.')
+            return redirect(url_for('register'))
+        new_user = User(username=username)
+        new_user.set_password(password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('You have successfully registered. Please log in.')
+        return redirect(url_for('login'))
+    return render_template('register.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 @app.route('/')
+@login_required
 def index():
+    groups = CampaignGroup.query.options(
+        joinedload(CampaignGroup.campaigns).joinedload(Campaign.product)
+    ).all()
+    return render_template('index.html', groups=groups)
+
+@app.route('/test_dashboard')
+def test_dashboard():
     groups = CampaignGroup.query.options(
         joinedload(CampaignGroup.campaigns).joinedload(Campaign.product)
     ).all()
@@ -55,45 +110,67 @@ def edit_group(group_id):
 def add_campaign():
     if request.method == 'POST':
         name = request.form['name']
-        product_name = request.form['product']
+        product_id = request.form['product_id']
         target_audience = request.form['target_audience']
         group_id = request.form['group_id']
+        campaign_docs = request.form['campaign_docs']
+        campaign_description = request.form['campaign_description']
+        TnC = request.form['TnC']
+        content = request.form['content']
+        division = request.form['division']
+        nature = request.form['nature']
+        adobe_camp_id = request.form['adobe_camp_id']
+        crm_camp_id = request.form['crm_camp_id']
         
-        product = Product.query.filter_by(name=product_name).first()
-        if not product:
-            product = Product(name=product_name)
-            db.session.add(product)
-            db.session.commit()
-        
-        campaign = Campaign(name=name, product_id=product.id, target_audience=target_audience, group_id=group_id)
+        product = Product.query.get(product_id)
+        campaign = Campaign(
+            name=name, 
+            product_id=product.id, 
+            target_audience=target_audience, 
+            group_id=group_id,
+            campaign_docs=campaign_docs,
+            campaign_description=campaign_description,
+            TnC=TnC,
+            content=content,
+            division=division,
+            nature=nature,
+            adobe_camp_id=adobe_camp_id,
+            crm_camp_id=crm_camp_id
+        )
         db.session.add(campaign)
         db.session.commit()
+        flash('New campaign added successfully.')
         return redirect(url_for('index'))
     
     groups = CampaignGroup.query.all()
-    return render_template('add_campaign.html', groups=groups)
+    products = Product.query.all()
+    return render_template('add_campaign.html', groups=groups, products=products)
 
 @app.route('/campaign/edit/<int:campaign_id>', methods=['GET', 'POST'])
 def edit_campaign(campaign_id):
     campaign = Campaign.query.get_or_404(campaign_id)
+    groups = CampaignGroup.query.all()
+    products = Product.query.all()
     if request.method == 'POST':
         campaign.name = request.form['name']
-        product_name = request.form['product']
+        product_id = request.form['product_id']
         campaign.target_audience = request.form['target_audience']
         campaign.group_id = request.form['group_id']
+        campaign.campaign_docs = request.form['campaign_docs']
+        campaign.campaign_description = request.form['campaign_description']
+        campaign.TnC = request.form['TnC']
+        campaign.content = request.form['content']
+        campaign.division = request.form['division']
+        campaign.nature = request.form['nature']
+        campaign.adobe_camp_id = request.form['adobe_camp_id']
+        campaign.crm_camp_id = request.form['crm_camp_id']
         
-        product = Product.query.filter_by(name=product_name).first()
-        if not product:
-            product = Product(name=product_name)
-            db.session.add(product)
-            db.session.commit()
-        
+        product = Product.query.get(product_id)
         campaign.product_id = product.id
         db.session.commit()
         return redirect(url_for('index'))
     
-    groups = CampaignGroup.query.all()
-    return render_template('edit_campaign.html', campaign=campaign, groups=groups)
+    return render_template('edit_campaign.html', campaign=campaign, groups=groups, products=products)
 
 @app.route('/group/dashboard/<int:group_id>')
 def group_dashboard(group_id):
@@ -103,23 +180,18 @@ def group_dashboard(group_id):
 @app.route('/conversion/add', methods=['GET', 'POST'])
 def add_conversion():
     if request.method == 'POST':
-        product_name = request.form['product']
+        product_id = request.form['product_id']
         action = request.form['action']
         campaign_id = request.form['campaign_id']
         
-        product = Product.query.filter_by(name=product_name).first()
-        if not product:
-            product = Product(name=product_name)
-            db.session.add(product)
-            db.session.commit()
-        
+        product = Product.query.get(product_id)
         conversion = Conversion(product_id=product.id, action=action, campaign_id=campaign_id)
         db.session.add(conversion)
         db.session.commit()
         return redirect(url_for('index'))
     
     campaigns = Campaign.query.all()
-    return render_template('add_conversion.html', campaigns=campaigns)
+    return render_template('add_conversion.html', campaigns=campaigns, products=Product.query.all())
 
 @app.route('/product/add', methods=['GET', 'POST'])
 def add_product():
@@ -144,4 +216,9 @@ def edit_product(product_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        if not User.query.filter_by(username='admin').first():
+            admin = User(username='admin')
+            admin.set_password('password')
+            db.session.add(admin)
+            db.session.commit()
     app.run(debug=True)

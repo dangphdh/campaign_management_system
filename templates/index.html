@@ -1,94 +1,278 @@
-{% extends "layout.html" %}
-{% block page_class %}dashboard-page{% endblock %}
-{% block content %}
-<div class="page-header">
-    <h2 class="mat-h2"><i class="material-icons">dashboard</i> Campaign Management Dashboard</h2>
-    <p class="intro-text mat-body-1">Welcome to your centralized campaign management system. Organize, track, and optimize your marketing efforts with ease.</p>
-</div>
+{% extends 'layout.html' %}
 
-<div class="mat-card">
-    <h3 class="mat-h3"><i class="material-icons">info</i> Campaign Information</h3>
-    <div class="table-container">
-        <table class="mat-table">
-            <thead>
-                <tr>
-                    <th>Campaign Name</th>
-                    <th>Group</th>
-                    <th>Product</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for group in groups %}
-                    {% for campaign in group.campaigns %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4 mb-4">Campaign Dashboard</h1>
+
+    <div class="card shadow">
+        <div class="card-body p-0">
+            {% if groups %}
+            <div class="table-responsive">
+                <table id="campaignTable" class="table table-striped table-bordered">
+                    <thead>
                         <tr>
-                            <td>{{ campaign.name }}</td>
-                            <td>{{ group.name }}</td>
-                            <td>{{ campaign.product.name }}</td>
-                            <td>
-                                <span class="status-badge {% if campaign.active %}active{% else %}inactive{% endif %}">
-                                    {{ 'Active' if campaign.active else 'Inactive' }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{{ url_for('edit_campaign', campaign_id=campaign.id) }}" class="btn btn-icon mat-button">
-                                    <i class="material-icons">edit</i>
-                                </a>
-                            </td>
+                            <th>Group</th>
+                            <th>Campaign Name</th>
+                            <th>Product</th>
+                            <th>Target Audience</th>
+                            <th>Campaign Docs</th>
+                            <th>Campaign Description</th>
+                            <th>T&C</th>
+                            <th>Content</th>
+                            <th>Division</th>
+                            <th>Nature</th>
+                            <th>Adobe Camp ID</th>
+                            <th>CRM Camp ID</th>
                         </tr>
-                    {% endfor %}
-                {% endfor %}
-            </tbody>
-        </table>
+                    </thead>
+                    <tbody>
+                        {% for group in groups %}
+                        {% if group.campaigns %}
+                        {% for campaign in group.campaigns %}
+                        <tr>
+                            <td>{{ group.name }}</td>
+                            <td>{{ campaign.name }}</td>
+                            <td>{{ campaign.product.name }}</td>
+                            <td>{{ campaign.target_audience }}</td>
+                            <td>{{ campaign.campaign_docs }}</td>
+                            <td>{{ campaign.campaign_description }}</td>
+                            <td>{{ campaign.TnC }}</td>
+                            <td>{{ campaign.content }}</td>
+                            <td>{{ campaign.division }}</td>
+                            <td>{{ campaign.nature }}</td>
+                            <td>{{ campaign.adobe_camp_id }}</td>
+                            <td>{{ campaign.crm_camp_id }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center p-4">No campaigns or groups found. Please add some data to view the dashboard.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="action-button">
+        <a href="{{ url_for('add_group') }}" class="btn btn-primary btn-lg rounded-circle">
+            <i class="material-icons">add</i>
+        </a>
     </div>
 </div>
 
-<div class="mat-card">
-    <h3 class="mat-h3"><i class="material-icons">folder_shared</i> Campaign Groups</h3>
-    {% for group in groups %}
-        <div class="group mat-card">
-            <div class="group-header mat-card-header">
-                <h4 class="mat-h4">
-                    <i class="material-icons mat-icon">folder</i>
-                    {{ group.name }}
-                </h4>
-                <a href="{{ url_for('group_dashboard', group_id=group.id) }}" class="mat-button mat-button-secondary">
-                    <i class="material-icons">dashboard</i> View Dashboard
-                </a>
-            </div>
-            <div class="mat-card-content">
-                {% if group.powerbi_link %}
-                    <p class="mat-body-2"><strong>Power BI Report:</strong> <a href="{{ group.powerbi_link }}" target="_blank" class="powerbi-link mat-button"><i class="material-icons">bar_chart</i> Open Report</a></p>
-                {% else %}
-                    <p class="mat-body-2"><em><i class="material-icons">info</i> No Power BI report linked</em></p>
-                {% endif %}
-                <ul class="campaign-list mat-list">
-                    {% for campaign in group.campaigns %}
-                        <li class="campaign-item mat-list-item">
-                            <i class="material-icons mat-icon">campaign</i>
-                            <span class="campaign-name mat-body-2">{{ campaign.name }}</span>
-                            <span class="campaign-product mat-caption">({{ campaign.product.name }})</span>
-                            <ul class="conversion-list mat-list">
-                                {% for conversion in campaign.conversions %}
-                                    <li class="conversion-item mat-list-item">
-                                        <i class="material-icons mat-icon">trending_up</i>
-                                        <span class="conversion-action mat-body-2">{{ conversion.action }}</span>
-                                        <span class="conversion-product mat-caption">({{ conversion.product.name }})</span>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    {% endfor %}
-</div>
+{% if groups %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#campaignTable').DataTable({
+            responsive: true,
+            scrollX: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            lengthChange: true,
+            
+            pageLength: 25,
 
-<div class="action-button">
-    <a href="{{ url_for('add_group') }}" class="mat-fab">
-        <i class="material-icons">add</i>
-    </a>
-</div>
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search campaigns..."
+            },
+            columnDefs: [
+                { targets: 0, visible: false },
+                { targets: '_all', className: 'text-nowrap' }
+            ],
+            order: [[0, 'asc']],
+            drawCallback: function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+
+                api.column(0, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group-header"><td colspan="12">' + group + '</td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endif %}
+
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        max-width: 100%;
+    }
+
+    #campaignTable {
+        margin-bottom: 0;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    #campaignTable thead tr th {
+        background-color: #f8f9fa !important;
+        border-top: #333;
+        font-weight: 600;
+        font-size: 0.75rem;
+        color: #495057;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        padding: 12px 15px;
+        border: 1px solid #dee2e6;
+    }
+
+    #campaignTable tbody tr {
+        background-color: #ffffff;
+        transition: background-color 0.3s;
+    }
+
+    #campaignTable tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    #campaignTable tbody tr:hover {
+        background-color: #e9ecef;
+    }
+
+    #campaignTable td {
+        padding: 10px 15px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+        border: 1px solid #dee2e6;
+        font-size: 0.875rem;
+    }
+
+    .group-header {
+        background-color: dimgray !important;
+        color: white;
+        font-weight: bold;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        text-transform: none;
+        padding: 15px !important;
+    }
+
+    .group-header:hover {
+        background-color: darkslategrey !important;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #ced4da;
+        border-radius: 20px;
+        padding: 5px 15px;
+    }
+
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid #ced4da;
+        border-radius: 20px;
+        padding: 5px 30px 5px 15px;
+    }
+
+    .action-button {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+    }
+
+    .action-button .btn {
+        width: 60px;
+        height: 60px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-button .material-icons {
+        font-size: 24px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.3em 0.8em;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: #007bff;
+        color: white !important;
+        border: 1px solid #007bff;
+        padding: 0%;
+        display: none;
+    }
+
+    .pagination-container {
+        width: 100%;
+        /* Ensure the container takes up the full width */
+        overflow-x: auto;
+        /* Add horizontal scroll if items exceed container width */
+        white-space: nowrap;
+        /* Prevent items from wrapping to the next line */
+    }
+
+    .pagination ul {
+        list-style-type: none;
+        /* Remove default list styling */
+        padding: 0;
+        margin: 0;
+        display: inline-flex;
+        /* Use flexbox to align items in a row */
+        flex-wrap: nowrap;
+        /* Allow items to wrap to the next line */
+    }
+
+    .pagination li {
+        margin-right: 5px;
+        display: inline-flex;
+        flex-wrap: nowrap;
+        /* Use flexbox to align items in a row */
+        /* Add some space between items */
+    }
+
+    .pagination li:last-child {
+        margin-right: 0;
+        /* Remove margin from the last item */
+    }
+
+    .pagination a {
+        text-decoration: none;
+        /* Remove underline from links */
+        padding: 5px 10px;
+        /* Add padding to make the links more clickable */
+        background-color: #f1f1f1;
+        /* Add a background color */
+        color: #333;
+        /* Set text color */
+        border-radius: 3px;
+        /* Add rounded corners */
+    }
+
+    .pagination a:hover {
+        background-color: #ddd;
+        /* Change background color on hover */
+    }
+</style>
 {% endblock %}

@@ -15,16 +15,36 @@
                 <h1>Campalitica</h1>
             </div>
             <nav>
-                <a href="{{ url_for('index') }}"><i class="material-icons">home </i> Homepage</a>
-                <a href="{{ url_for('add_group') }}"><i class="material-icons">group_add</i> Add Group</a>
-                <a href="{{ url_for('add_campaign') }}"><i class="material-icons">add_task</i> Add Campaign</a>
-                <a href="{{ url_for('add_conversion') }}"><i class="material-icons">trending_up</i> Add Conversion</a>
-                <a href="{{ url_for('add_product') }}"><i class="material-icons">inventory</i> Manage Products</a>
-                <a href="{{ url_for('index') }}"><i class="material-icons">groups_2</i>  Customer</a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('index') }}"><i class="material-icons">home</i> Homepage</a>
+                    <a href="{{ url_for('add_group') }}"><i class="material-icons">group_add</i> Add Group</a>
+                    <a href="{{ url_for('add_campaign') }}"><i class="material-icons">add_task</i> Add Campaign</a>
+                    <a href="{{ url_for('add_conversion') }}"><i class="material-icons">trending_up</i> Add Conversion</a>
+                    <a href="{{ url_for('add_product') }}"><i class="material-icons">inventory</i> Manage Products</a>
+                    <a href="{{ url_for('index') }}"><i class="material-icons">groups_2</i> Customer</a>
+                    <a href="{{ url_for('logout') }}"><i class="material-icons">logout</i> Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}"><i class="material-icons">login</i> Login</a>
+                {% endif %}
             </nav>
         </aside>
         <main>
             <div class="page-container {% block page_class %}{% endblock %}">
+                {% if current_user.is_authenticated %}
+                    <div class="user-info">
+                        <i class="material-icons">account_circle</i>
+                        <span>{{ current_user.username }}</span>
+                    </div>
+                {% endif %}
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for message in messages %}
+                                <div class="flash-message">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
                 {% block content %}{% endblock %}
             </div>
         </main>

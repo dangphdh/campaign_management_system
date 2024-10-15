@@ -1,10 +1,24 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
     campaigns = db.relationship('Campaign', backref='product', lazy=True)
 
 class Conversion(db.Model):
@@ -21,6 +35,14 @@ class Campaign(db.Model):
     target_audience = db.Column(db.String(100), nullable=False)
     group_id = db.Column(db.Integer, db.ForeignKey('campaign_group.id'), nullable=False)
     conversions = db.relationship('Conversion', backref='campaign', lazy=True)
+    campaign_docs = db.Column(db.String(500), nullable=True)
+    campaign_description = db.Column(db.Text, nullable=True)
+    TnC = db.Column(db.Text, nullable=True)
+    content = db.Column(db.Text, nullable=True)
+    division = db.Column(db.String(100), nullable=True)
+    nature = db.Column(db.String(100), nullable=True)
+    adobe_camp_id = db.Column(db.String(100), nullable=True)
+    crm_camp_id = db.Column(db.String(100), nullable=True)
 
 class CampaignGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)

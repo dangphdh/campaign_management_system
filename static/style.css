@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 :root {
-    --primary-color: #3f51b5;
-    --primary-light: #757de8;
+    --primary-color: #ed1c24;
+    --primary-light: #e62128;
     --primary-dark: #002984;
     --secondary-color: #ff4081;
     --secondary-light: #ff79b0;
@@ -22,7 +22,12 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: var(--background-color);
+    background-color: rgba(245, 245, 245, 0.8); /* Increased transparency */
+    background-image: url('/static/background.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
     color: var(--on-background);
     min-height: 100vh;
 }
@@ -34,7 +39,7 @@ body {
 
 .sidebar {
     width: 250px;
-    background-color: var(--primary-color);
+    background-color: #333333; /* Added transparency to sidebar */
     padding: 2rem;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
@@ -59,7 +64,7 @@ body {
 .logo h1 {
     font-size: 2.0rem;
     font-weight: 500;
-    color: var(--on-primary);
+    color: var(--primary-color);
 }
 
 nav {
@@ -102,14 +107,14 @@ nav a:hover::after {
 main {
     flex-grow: 1;
     padding: 2rem;
-    background-color: var(--background-color);
+    background-color: rgba(245, 245, 245, 0.1); /* Added transparency to main content area */
 }
 
 .page-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
-    background-color: var(--surface-color);
+    background-color: rgba(255, 255, 255, 0.5); /* Added transparency to page container */
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -154,12 +159,12 @@ main {
 .intro-text {
     font-size: 1.1rem;
     color: var(--on-background);
-    max-width: 800px;
+    max-width: 1000px;
     margin-bottom: 2rem;
 }
 
 .mat-card {
-    background-color: var(--surface-color);
+    background-color: rgba(255, 255, 255, 0.9); /* Added transparency to cards */
     border-radius: 4px;
     padding: 1.5rem;
     box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.14), 0 1px 3px 0 rgba(0,0,0,0.12);
@@ -174,20 +179,6 @@ main {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 1rem;
-}
-
-.mat-table th, .mat-table td {
-    text-align: left;
-    padding: 1rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.mat-table th {
-    font-weight: 500;
-    color: var(--primary-color);
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.5px;
 }
 
 .mat-table tbody tr:hover {

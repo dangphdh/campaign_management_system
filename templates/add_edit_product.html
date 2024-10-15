@@ -1,21 +1,36 @@
 {% extends "layout.html" %}
+{% block page_class %}{% if product %}edit-product-page{% else %}add-product-page{% endif %}{% endblock %}
 {% block content %}
-<h2>{% if product %}Edit{% else %}Add{% endif %} Product</h2>
-<form method="POST">
-    <label for="name">Product Name:</label>
-    <input type="text" id="name" name="name" required {% if product %}value="{{ product.name }}"{% endif %}>
-    
-    <button type="submit">{% if product %}Update{% else %}Add{% endif %} Product</button>
-</form>
+<div class="mat-card">
+    <h2 class="mat-h2"><i class="material-icons">{% if product %}edit{% else %}add_circle{% endif %}</i> {% if product %}Edit{% else %}Add{% endif %} Product</h2>
+    <form method="POST" class="mat-form">
+        <div class="form-field">
+            <label for="name" class="mat-label">Product Name</label>
+            <input type="text" id="name" name="name" required class="mat-input" {% if product %}value="{{ product.name }}"{% endif %}>
+        </div>
+        <div class="form-field">
+            <label for="description" class="mat-label">Product Description</label>
+            <textarea id="description" name="description" class="mat-input" rows="4">{% if product %}{{ product.description }}{% endif %}</textarea>
+        </div>
+        
+        <button type="submit" class="mat-button mat-button-primary">
+            <i class="material-icons">{% if product %}update{% else %}add{% endif %}</i> {% if product %}Update{% else %}Add{% endif %} Product
+        </button>
+    </form>
+</div>
 
 {% if not product %}
-<h2>Existing Products</h2>
-<ul>
-    {% for product in products %}
-    <li>
-        <a href="{{ url_for('edit_product', product_id=product.id) }}">{{ product.name }}</a>
-    </li>
-    {% endfor %}
-</ul>
+<div class="mat-card">
+    <h2 class="mat-h2"><i class="material-icons">edit</i> Edit Existing Products</h2>
+    <ul class="mat-list">
+        {% for product in products %}
+        <li class="mat-list-item">
+            <a href="{{ url_for('edit_product', product_id=product.id) }}" class="mat-button">
+                <i class="material-icons">inventory_2</i> {{ product.name }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endif %}
 {% endblock %}

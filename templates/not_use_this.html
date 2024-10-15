@@ -1,0 +1,43 @@
+<!-- Comment for unuse Campaign Groups -->
+<!--  
+<div class="mat-card">
+    <h3 class="mat-h3"><i class="material-icons">folder_shared</i> Campaign Groups</h3>
+    {% for group in groups %}
+        <div class="group mat-card">
+            <div class="group-header mat-card-header">
+                <h4 class="mat-h4">
+                    <i class="material-icons mat-icon">folder</i>
+                    {{ group.name }}
+                </h4>
+                <a href="{{ url_for('group_dashboard', group_id=group.id) }}" class="mat-button mat-button-secondary">
+                    <i class="material-icons">dashboard</i> View Dashboard
+                </a>
+            </div>
+            <div class="mat-card-content">
+                {% if group.powerbi_link %}
+                    <p class="mat-body-2"><strong>Power BI Report:</strong> <a href="{{ group.powerbi_link }}" target="_blank" class="powerbi-link mat-button"><i class="material-icons">bar_chart</i> Open Report</a></p>
+                {% else %}
+                    <p class="mat-body-2"><em><i class="material-icons">info</i> No Power BI report linked</em></p>
+                {% endif %}
+                <ul class="campaign-list mat-list">
+                    {% for campaign in group.campaigns %}
+                        <li class="campaign-item mat-list-item">
+                            <i class="material-icons mat-icon">campaign</i>
+                            <span class="campaign-name mat-body-2">{{ campaign.name }}</span>
+                            <span class="campaign-product mat-caption">({{ campaign.product.name }})</span>
+                            <ul class="conversion-list mat-list">
+                                {% for conversion in campaign.conversions %}
+                                    <li class="conversion-item mat-list-item">
+                                        <i class="material-icons mat-icon">trending_up</i>
+                                        <span class="conversion-action mat-body-2">{{ conversion.action }}</span>
+                                        <span class="conversion-product mat-caption">({{ conversion.product.name }})</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endfor %}
+</div> -->

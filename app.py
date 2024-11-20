@@ -172,7 +172,7 @@ def edit_campaign(campaign_id):
     
     return render_template('edit_campaign.html', campaign=campaign, groups=groups, products=products)
 
-@app.route('/group/dashboard/<int:group_id>')
+@app.route('/group/dashboard/<group_id>')
 def group_dashboard(group_id):
     group = CampaignGroup.query.get_or_404(group_id)
     return render_template('group_dashboard.html', group=group)

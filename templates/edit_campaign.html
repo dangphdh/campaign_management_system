@@ -1,80 +1,134 @@
 {% extends "layout.html" %}
-{% block page_class %}edit-campaign-page{% endblock %}
 {% block content %}
-<div class="mat-card">
-    <h2 class="mat-h2"><i class="material-icons">edit</i> Edit Campaign</h2>
-    <form method="POST" class="mat-form">
-        <div class="form-field">
-            <label for="name" class="mat-label">Campaign Name</label>
-            <input type="text" id="name" name="name" required class="mat-input" value="{{ campaign.name }}">
-        </div>
+<div class="page-container add-campaign-page">
+    <div class="mat-card">
+        <h2 class="mat-h2"><i class="material-icons">edit</i> Edit Campaign: {{ campaign.name }}</h2>
+        <form method="POST" action="{{ url_for('edit_campaign', campaign_id=campaign.id) }}" class="mat-form">
+            <div class="form-field">
+                <label for="name" class="mat-label">Campaign Name</label>
+                <input type="text" id="name" name="name" value="{{ campaign.name }}" required class="mat-input">
+            </div>
+            
+            <div class="form-field">
+                <label for="product_id" class="mat-label">Product</label>
+                <select id="product_id" name="product_id" required class="mat-select">
+                    {% for product in products %}
+                        <option value="{{ product.id }}" {% if product.id == campaign.product_id %}selected{% endif %}>
+                            {{ product.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-field">
+                <label for="target_audience" class="mat-label">Target Audience</label>
+                <input type="text" id="target_audience" name="target_audience" value="{{ campaign.target_audience }}" required class="mat-input">
+            </div>
+            
+            <div class="form-field">
+                <label for="group_id" class="mat-label">Campaign Group</label>
+                <select id="group_id" name="group_id" required class="mat-select">
+                    {% for group in groups %}
+                        <option value="{{ group.id }}" {% if group.id == campaign.group_id %}selected{% endif %}>
+                            {{ group.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-field">
+                <label for="campaign_docs" class="mat-label">Campaign Docs (URL)</label>
+                <input type="url" id="campaign_docs" name="campaign_docs" value="{{ campaign.campaign_docs }}" class="mat-input">
+            </div>
+            
+            <div class="form-field">
+                <label for="campaign_description" class="mat-label">Campaign Description</label>
+                <textarea id="campaign_description" name="campaign_description" class="mat-textarea">{{ campaign.campaign_description }}</textarea>
+            </div>
+            
+            <div class="form-field">
+                <label for="TnC" class="mat-label">Terms and Conditions</label>
+                <textarea id="TnC" name="TnC" class="mat-textarea">{{ campaign.TnC }}</textarea>
+            </div>
+            
+            <div class="form-field">
+                <label for="content" class="mat-label">Content (Link/Image/Text)</label>
+                <input type="text" id="content" name="content" value="{{ campaign.content }}" class="mat-input">
+            </div>
+            
+            <div class="form-field">
+                <label for="division" class="mat-label">Division</label>
+                <input type="text" id="division" name="division" value="{{ campaign.division }}" class="mat-input">
+            </div>
+            
+            <div class="form-field">
+                <label for="nature" class="mat-label">Nature</label>
+                <input type="text" id="nature" name="nature" value="{{ campaign.nature }}" class="mat-input">
+            </div>
+            
+            <div class="form-field">
+                <label for="adobe_camp_id" class="mat-label">Adobe Campaign ID</label>
+                <input type="text" id="adobe_camp_id" name="adobe_camp_id" value="{{ campaign.adobe_camp_id }}" class="mat-input">
+            </div>
+            
+            <div class="form-field">
+                <label for="crm_camp_id" class="mat-label">CRM Campaign ID</label>
+                <input type="text" id="crm_camp_id" name="crm_camp_id" value="{{ campaign.crm_camp_id }}" class="mat-input">
+            </div>
+            
+            <button type="submit" class="mat-button mat-button-primary">
+                <i class="material-icons">save</i> Update Campaign
+            </button>
+        </form>
+    </div>
+
+    <div class="mat-card mt-4">
+        <h2 class="mat-h2"><i class="material-icons">assignment</i> Campaign Tasks</h2>
         
-        <div class="form-field">
-            <label for="product_id" class="mat-label">Product</label>
-            <select id="product_id" name="product_id" required class="mat-select">
-                {% for product in products %}
-                    <option value="{{ product.id }}" {% if product.id == campaign.product_id %}selected{% endif %}>{{ product.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        
-        <div class="form-field">
-            <label for="target_audience" class="mat-label">Target Audience</label>
-            <input type="text" id="target_audience" name="target_audience" required class="mat-input" value="{{ campaign.target_audience }}">
-        </div>
-        
-        <div class="form-field">
-            <label for="group_id" class="mat-label">Campaign Group</label>
-            <select id="group_id" name="group_id" required class="mat-select">
-                {% for group in groups %}
-                    <option value="{{ group.id }}" {% if group.id == campaign.group_id %}selected{% endif %}>{{ group.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        
-        <div class="form-field">
-            <label for="campaign_docs" class="mat-label">Campaign Docs (URL)</label>
-            <input type="url" id="campaign_docs" name="campaign_docs" class="mat-input" value="{{ campaign.campaign_docs }}">
-        </div>
-        
-        <div class="form-field">
-            <label for="campaign_description" class="mat-label">Campaign Description</label>
-            <textarea id="campaign_description" name="campaign_description" class="mat-textarea">{{ campaign.campaign_description }}</textarea>
-        </div>
-        
-        <div class="form-field">
-            <label for="TnC" class="mat-label">Terms and Conditions</label>
-            <textarea id="TnC" name="TnC" class="mat-textarea">{{ campaign.TnC }}</textarea>
-        </div>
-        
-        <div class="form-field">
-            <label for="content" class="mat-label">Content (Link/Image/Text)</label>
-            <input type="text" id="content" name="content" class="mat-input" value="{{ campaign.content }}">
-        </div>
-        
-        <div class="form-field">
-            <label for="division" class="mat-label">Division</label>
-            <input type="text" id="division" name="division" class="mat-input" value="{{ campaign.division }}">
-        </div>
-        
-        <div class="form-field">
-            <label for="nature" class="mat-label">Nature</label>
-            <input type="text" id="nature" name="nature" class="mat-input" value="{{ campaign.nature }}">
-        </div>
-        
-        <div class="form-field">
-            <label for="adobe_camp_id" class="mat-label">Adobe Campaign ID</label>
-            <input type="text" id="adobe_camp_id" name="adobe_camp_id" class="mat-input" value="{{ campaign.adobe_camp_id }}">
-        </div>
-        
-        <div class="form-field">
-            <label for="crm_camp_id" class="mat-label">CRM Campaign ID</label>
-            <input type="text" id="crm_camp_id" name="crm_camp_id" class="mat-input" value="{{ campaign.crm_camp_id }}">
-        </div>
-        
-        <button type="submit" class="mat-button mat-button-primary">
-            <i class="material-icons">save</i> Update Campaign
-        </button>
-    </form>
+        <!-- Existing Tasks List -->
+        <form method="POST" action="{{ url_for('edit_campaign', campaign_id=campaign.id) }}" class="mat-form">
+            <input type="hidden" name="form_type" value="task_update">
+            
+            {% if campaign.tasks %}
+                <div class="form-field existing-tasks">
+                    <label class="mat-label">Tasks</label>
+                    <div class="mat-table-container">
+                        <table class="mat-table">
+                            <thead>
+                                <tr>
+                                    <th>Jira Ticket</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in campaign.tasks %}
+                                <tr>
+                                    <td>{{ task.jira_ticket or 'N/A' }}</td>
+                                    <td>{{ task.description or 'No description' }}</td>
+                                    <td>
+                                        <select name="task_status_{{ task.id }}" class="mat-select">
+                                            <option value="Pending" {% if task.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                            <option value="In Progress" {% if task.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                                            <option value="Completed" {% if task.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="submit" name="update_task_id" value="{{ task.id }}" class="mat-button mat-button-small">
+                                            <i class="material-icons">save</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <p class="mat-input">No tasks for this campaign yet.</p>
+            {% endif %}
+        </form>
+    </div>
 </div>
 {% endblock %}

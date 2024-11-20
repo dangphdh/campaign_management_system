@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -8,6 +9,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
+    # journeys = db.relationship('Journey', backref='user', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -35,6 +37,7 @@ class Campaign(db.Model):
     target_audience = db.Column(db.String(100), nullable=False)
     group_id = db.Column(db.Integer, db.ForeignKey('campaign_group.id'), nullable=False)
     conversions = db.relationship('Conversion', backref='campaign', lazy=True)
+    tasks = db.relationship('Task', backref='campaign', lazy=True)
     campaign_docs = db.Column(db.String(500), nullable=True)
     campaign_description = db.Column(db.Text, nullable=True)
     TnC = db.Column(db.Text, nullable=True)
@@ -49,3 +52,28 @@ class CampaignGroup(db.Model):
     name = db.Column(db.String(100), nullable=False)
     powerbi_link = db.Column(db.String(500), nullable=True)
     campaigns = db.relationship('Campaign', backref='group', lazy=True)
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    task_id = db.Column(db.String(100), nullable=False)
+    jira_ticket = db.Column(db.String(100), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign.id'), nullable=False)
+    status = db.Column(db.String(50), nullable=True, default='Pending')
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+class Journey(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    steps = db.relationship('JourneyStep', backref='journey', lazy='dynamic', cascade='all, delete-orphan')
+
+class JourneyStep(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    journey_id = db.Column(db.Integer, db.ForeignKey('journey.id'), nullable=False)
+    step_number = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    step_type = db.Column(db.String(50), nullable=False)  # email, sms, wait, condition
+    details = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

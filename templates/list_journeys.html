@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container journeys-list">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>My Journeys</h1>
+            
+            <div class="actions mb-4">
+                <a href="{{ url_for('journey_design') }}" class="btn btn-primary">Create New Journey</a>
+            </div>
+
+            {% if journeys %}
+                <div class="journey-cards">
+                    {% for journey in journeys %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title">{{ journey.name }}</h5>
+                                    <small class="text-muted">Created: {{ journey.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
+                                <p class="card-text">
+                                    <strong>Total Steps:</strong> {{ journey.steps.count() }}
+                                </p>
+                                <div class="journey-actions">
+                                    <a href="{{ url_for('view_journey', journey_id=journey.id) }}" class="btn btn-sm btn-info">View Details</a>
+                                    <a href="#" class="btn btn-sm btn-secondary">Edit</a>
+                                    <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    You haven't created any journeys yet. <a href="{{ url_for('journey_design') }}">Create your first journey</a>!
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.journeys-list .card {
+    transition: all 0.3s ease;
+}
+
+.journeys-list .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.journeys-list .journey-actions .btn {
+    margin-right: 5px;
+}
+</style>
+{% endblock %}

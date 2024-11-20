@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from models import db, User, Product, Conversion, Campaign, CampaignGroup
+from models import db, User, Product, Conversion, Campaign, CampaignGroup, Task, Journey, JourneyStep
 from sqlalchemy.orm import joinedload
+from sqlalchemy import distinct
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///campaigns.db'
@@ -151,6 +152,28 @@ def edit_campaign(campaign_id):
     campaign = Campaign.query.get_or_404(campaign_id)
     groups = CampaignGroup.query.all()
     products = Product.query.all()
+    
+    # New task creation section
+    if request.method == 'POST' and request.form.get('form_type') == 'task_creation':
+        task_id = request.form.get('task_id')
+        jira_ticket = request.form.get('jira_ticket', '')
+        description = request.form.get('description', '')
+        status = request.form.get('status', 'Pending')
+        
+        new_task = Task(
+            task_id=task_id,
+            jira_ticket=jira_ticket,
+            description=description,
+            campaign_id=campaign_id,
+            status=status
+        )
+        
+        db.session.add(new_task)
+        db.session.commit()
+        flash('Task added successfully!', 'success')
+        return redirect(url_for('edit_campaign', campaign_id=campaign_id))
+    
+    # Existing campaign edit logic
     if request.method == 'POST':
         campaign.name = request.form['name']
         product_id = request.form['product_id']
@@ -170,7 +193,14 @@ def edit_campaign(campaign_id):
         db.session.commit()
         return redirect(url_for('index'))
     
-    return render_template('edit_campaign.html', campaign=campaign, groups=groups, products=products)
+    # Fetch existing tasks for this campaign
+    tasks = Task.query.filter_by(campaign_id=campaign_id).all()
+    
+    return render_template('edit_campaign.html', 
+                           campaign=campaign, 
+                           groups=groups, 
+                           products=products,
+                           tasks=tasks)
 
 @app.route('/group/dashboard/<group_id>')
 def group_dashboard(group_id):
@@ -212,6 +242,70 @@ def edit_product(product_id):
         db.session.commit()
         return redirect(url_for('add_product'))
     return render_template('add_edit_product.html', product=product)
+
+@app.route('/audience_list')
+@login_required
+def audience_list():
+    audiences = db.session.query(distinct(Campaign.target_audience)).all()
+    return render_template('audience_list.html', audiences=audiences)
+
+@app.route('/create_journey', methods=['POST'])
+@login_required
+def create_journey():
+    if not request.is_json:
+        return jsonify({'error': 'Content type must be application/json'}), 400
+    
+    data = request.get_json()
+    
+    # Create new journey with a default name
+    new_journey = Journey(
+        name=f"Journey {data['steps'][0]['type']} to {data['steps'][-1]['type']}",
+        user_id=current_user.id
+    )
+    db.session.add(new_journey)
+    db.session.commit()
+
+    # Create steps
+    step_map = {}  # Map step IDs to database objects
+    for step_data in data['steps']:
+        journey_step = JourneyStep(
+            journey_id=new_journey.id,
+            name=f"{step_data['type']} Step",
+            step_type=step_data['type'],
+            details=f"Position: ({step_data['position']['x']}, {step_data['position']['y']})",
+            x_position=step_data['position']['x'],
+            y_position=step_data['position']['y']
+        )
+        db.session.add(journey_step)
+        step_map[step_data['id']] = journey_step
+
+    # Create connections
+    for conn in data['connections']:
+        from_step = step_map[conn['from']]
+        to_step = step_map[conn['to']]
+        from_step.next_step_id = to_step.id
+
+    db.session.commit()
+    return jsonify({'success': True, 'journey_id': new_journey.id})
+
+@app.route('/journeys', methods=['GET'])
+@login_required
+def list_journeys():
+    journeys = Journey.query.filter_by(user_id=current_user.id).all()
+    return render_template('journey_design.html', journeys=journeys)
+
+@app.route('/journey/<int:journey_id>', methods=['GET'])
+@login_required
+def view_journey(journey_id):
+    journey = Journey.query.get_or_404(journey_id)
+    # Ensure the journey belongs to the current user
+    if journey.user_id != current_user.id:
+        flash('You do not have permission to view this journey.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Fetch steps in order
+    steps = journey.steps.order_by(JourneyStep.step_number).all()
+    return render_template('view_journey.html', journey=journey, steps=steps)
 
 if __name__ == '__main__':
     with app.app_context():

@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1>Audience List</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Audience Segment</th>
+            <th>Potential</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for segment in audience_data %}
+        <tr>
+            <td>{{ segment.name }}</td>
+            <td>{{ segment.potential }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

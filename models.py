@@ -72,8 +72,7 @@ class Journey(db.Model):
 class JourneyStep(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     journey_id = db.Column(db.Integer, db.ForeignKey('journey.id'), nullable=False)
-    step_number = db.Column(db.Integer, nullable=False)
+    step_number = db.Column(db.String(15), nullable=False)
     name = db.Column(db.String(100), nullable=False)
-    step_type = db.Column(db.String(50), nullable=False)  # email, sms, wait, condition
     details = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

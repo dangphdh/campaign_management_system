@@ -11,24 +11,32 @@
             </div>
 
             <div class="journey-steps">
-                {% for step in steps %}
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Step {{ step.step_number }}: {{ step.name }}</h5>
-                            <div class="step-details">
-                                <p><strong>Type:</strong> {{ step.step_type }}</p>
-                                {% if step.details %}
-                                    <p><strong>Details:</strong> {{ step.details }}</p>
-                                {% endif %}
+                <h3>Steps</h3>
+                <div class="row">
+                    {% for step in steps %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Step {{ step.step_number }}: {{ step.name }}</h5>
+                                    <div class="step-details">
+                                        <p><strong>Type:</strong> {{ step.step_type }}</p>
+                                        {% if step.details %}
+                                            <p><strong>Details:</strong> {{ step.details }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
 
-            <div class="journey-actions">
+            <div class="journey-actions mt-4">
                 <a href="{{ url_for('journey_design') }}" class="btn btn-primary">Create New Journey</a>
                 <a href="{{ url_for('list_journeys') }}" class="btn btn-secondary">Back to Journeys</a>
+                <form action="{{ url_for('delete_journey', journey_id=journey.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Delete Journey</button>
+                </form>
             </div>
         </div>
     </div>

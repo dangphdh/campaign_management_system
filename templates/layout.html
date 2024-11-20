@@ -21,18 +21,15 @@
                     <a href="{{ url_for('add_campaign') }}"><i class="material-icons">add_task</i> Add Campaign</a>
                     <a href="{{ url_for('add_conversion') }}"><i class="material-icons">trending_up</i> Add Conversion</a>
                     <a href="{{ url_for('add_product') }}"><i class="material-icons">inventory</i> Manage Products</a>  
-                    <a href="{{ url_for('audience_list') }}"><i class="material-icons">groups</i>Audience List</a>
-                    </li>
-                    <!-- Journey Management Dropdown -->
-                    <a href="{{ url_for('index') }}"><i class="material-icons">groups_2</i> Customer</a>
+                    <a href="{{ url_for('audience_list') }}"><i class="material-icons">groups</i> Audience List</a>
+                    <a href="{{ url_for('journey_design') }}"><i class="material-icons">create</i> Create Journey</a> <!-- New link for journey design -->
                     <div class="dropdown">
                         <a href="{{ url_for('index') }}"><i class="material-icons">trending_up</i> Journey Management</a>
                         <div class="dropdown-content">
-                            <a href="{{ url_for('index') }}"><i class="material-icons">directions_run</i> Journey</a>
+                            <a href="{{ url_for('list_journeys') }}"><i class="material-icons">directions_run</i> Journey</a>
                             <a href="{{ url_for('index') }}"><i class="material-icons">swap_horiz</i> Conversion Mapping</a>
                         </div>
                     </div>
-                    
                     <a href="{{ url_for('logout') }}"><i class="material-icons">logout</i> Logout</a>
                 {% else %}
                     <a href="{{ url_for('login') }}"><i class="material-icons">login</i> Login</a>

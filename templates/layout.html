@@ -23,15 +23,14 @@
                     <a href="{{ url_for('add_product') }}"><i class="material-icons">inventory</i> Manage Products</a>  
                     <a href="{{ url_for('audience_list') }}"><i class="material-icons">groups</i>Audience List</a>
                     <a href="{{ url_for('list_journeys') }}"><i class="material-icons">directions_run</i> My Journeys</a>
-                    <!-- Journey Management Dropdown -->
+                    <!-- Journey Management Dropdown 
                     <div class="dropdown">
                         <a href="{{ url_for('index') }}"><i class="material-icons">trending_up</i> Journey Management</a>
                         <div class="dropdown-content">
-                            <a href="{{ url_for('journey_design') }}"><i class="material-icons">directions_run</i> Journey</a>
-                            <a href="{{ url_for('conversion_mapping') }}"><i class="material-icons">swap_horiz</i> Conversion Mapping</a>
+                            <a href="{{ url_for('list_journeys') }}"><i class="material-icons">directions_run</i> Journey</a>
                         </div>
                     </div>
-                    
+                    -->
                     <a href="{{ url_for('logout') }}"><i class="material-icons">logout</i> Logout</a>
                 {% else %}
                     <a href="{{ url_for('login') }}"><i class="material-icons">login</i> Login</a>

@@ -225,7 +225,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 params: Array.from(step.querySelectorAll('.params-container div')).map(param => ({
                     key: param.querySelector('.param-key').value,
                     value: param.querySelector('.param-value').value
-                }))
+                }
+                // Concat all param in json string
+                ))
             }))
         };
 

@@ -4,6 +4,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from models import db, User, Product, Conversion, Campaign, CampaignGroup, Task, Journey, JourneyStep
 from sqlalchemy.orm import joinedload
 from sqlalchemy import distinct
+import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///campaigns.db'
@@ -259,7 +260,7 @@ def create_journey():
     
     # Create new journey with a default name
     new_journey = Journey(
-        name=f"Journey {data['steps'][0]['type']} to {data['steps'][-1]['type']}",
+        name=f"Journey {data['steps'][0]} to {data['steps'][-1]}",
         user_id=current_user.id
     )
     db.session.add(new_journey)
@@ -270,11 +271,8 @@ def create_journey():
     for step_data in data['steps']:
         journey_step = JourneyStep(
             journey_id=new_journey.id,
-            name=f"{step_data['type']} Step",
-            step_type=step_data['type'],
-            details=f"Position: ({step_data['position']['x']}, {step_data['position']['y']})",
-            x_position=step_data['position']['x'],
-            y_position=step_data['position']['y']
+            name=f"{step_data['stepNang']} Step",
+            details=json.dumps(step_data['details'])
         )
         db.session.add(journey_step)
         step_map[step_data['id']] = journey_step
@@ -292,7 +290,7 @@ def create_journey():
 @login_required
 def list_journeys():
     journeys = Journey.query.filter_by(user_id=current_user.id).all()
-    return render_template('journey_design.html', journeys=journeys)
+    return render_template('list_journeys.html', journeys=journeys)
 
 @app.route('/journey/<int:journey_id>', methods=['GET'])
 @login_required
@@ -306,6 +304,11 @@ def view_journey(journey_id):
     # Fetch steps in order
     steps = journey.steps.order_by(JourneyStep.step_number).all()
     return render_template('view_journey.html', journey=journey, steps=steps)
+
+@app.route('/journey_design', methods=['GET'])
+@login_required
+def journey_design():
+    return render_template('journey_design.html')
 
 if __name__ == '__main__':
     with app.app_context():

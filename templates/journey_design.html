@@ -21,73 +21,62 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     cursor: move;
-    user-select: none;
+    user-select: none; /* Original property */
+    -webkit-user-select: none; /* Added for Safari compatibility */
 }
 
 .canvas-container {
     flex-grow: 1;
     position: relative;
-    overflow: hidden;
+    overflow: auto; /* Allow scrolling */
     background: #fafafa;
-}
-
-#journeyCanvas {
-    position: absolute;
-    width: 100%;
     height: 100%;
+    display: flex;
+    justify-content: center; /* Center the step boxes */
+    align-items: flex-start; /* Align items to the top */
 }
 
-.step-node {
-    position: absolute;
+.step-box {
+    position: relative;
     width: 200px;
     padding: 15px;
     background: white;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    cursor: move;
-    user-select: none;
+    margin: 10px;
 }
 
-.step-node .handle {
-    width: 12px;
-    height: 12px;
-    background: #666;
-    border-radius: 50%;
-    position: absolute;
-}
-
-.step-node .handle.input {
-    top: 50%;
-    left: -6px;
-    transform: translateY(-50%);
-}
-
-.step-node .handle.output {
-    top: 50%;
-    right: -6px;
-    transform: translateY(-50%);
-}
-
-.step-node .title {
+.step-box .title {
     font-weight: bold;
     margin-bottom: 8px;
 }
 
-.step-node .type {
-    font-size: 12px;
-    color: #666;
+.step-box .remove-button {
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 5px;
 }
 
-.step-node .details {
-    margin-top: 8px;
-    font-size: 12px;
+.step-box .add-param-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 5px;
 }
 
-.toolbar-header {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
+.step-box .remove-param-button {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 3px;
 }
 
 .save-button {
@@ -105,240 +94,138 @@
 .save-button:hover {
     background: #0056b3;
 }
+
+.connector {
+    position: absolute;
+    stroke: #666;
+    stroke-width: 2;
+}
 </style>
 
 <div class="journey-design-container">
     <div class="toolbar">
         <div class="toolbar-header">Journey Steps</div>
-        <div class="toolbar-item" data-type="email">
-            <div class="title">Email</div>
-            <div class="type">Communication</div>
-        </div>
-        <div class="toolbar-item" data-type="sms">
-            <div class="title">SMS</div>
-            <div class="type">Communication</div>
-        </div>
-        <div class="toolbar-item" data-type="wait">
-            <div class="title">Wait</div>
-            <div class="type">Delay</div>
-        </div>
-        <div class="toolbar-item" data-type="condition">
-            <div class="title">Condition</div>
-            <div class="type">Decision</div>
-        </div>
+        <button class="toolbar-item" id="newStepButton">New Step</button>
     </div>
     
-    <div class="canvas-container">
-        <svg id="journeyCanvas"></svg>
+    <div class="canvas-container" id="canvasContainer">
+        <svg id="connectorsCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></svg>
+        <div id="stepsContainer"></div>
+        <input type="text" placeholder="Journey Name" id="journeyName" required /> <!-- New field for journey name -->
         <button class="save-button" id="saveJourney">Save Journey</button>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const canvas = document.getElementById('journeyCanvas');
-    const canvasContainer = document.querySelector('.canvas-container');
-    let steps = [];
-    let connections = [];
-    let draggedElement = null;
-    let selectedHandle = null;
-    let drawingLine = false;
-    let tempLine = null;
-    let stepCounter = 0;
+    const stepsContainer = document.getElementById('stepsContainer');
+    const connectorsCanvas = document.getElementById('connectorsCanvas');
 
-    // Set canvas size
-    function updateCanvasSize() {
-        canvas.setAttribute('width', canvasContainer.offsetWidth);
-        canvas.setAttribute('height', canvasContainer.offsetHeight);
-    }
-    updateCanvasSize();
-    window.addEventListener('resize', updateCanvasSize);
-
-    // Create a new step node
-    function createStepNode(type, x, y) {
-        stepCounter++;
-        const step = document.createElement('div');
-        step.className = 'step-node';
-        step.dataset.stepId = `step-${stepCounter}`;
-        step.innerHTML = `
-            <div class="handle input"></div>
-            <div class="title">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
-            <div class="type">${type}</div>
-            <div class="details">Step ${stepCounter}</div>
-            <div class="handle output"></div>
+    // Create a new step box
+    function createStepBox() {
+        const stepBox = document.createElement('div');
+        stepBox.className = 'step-box';
+        const stepNumber = stepsContainer.children.length + 1; // Calculate step number based on current children
+        stepBox.innerHTML = `
+            <div class="title">Step ${stepNumber}</div>
+            <input type="text" placeholder="Step Name" class="step-name" required />
+            <input type="text" placeholder="Page Name" class="page-name" required />
+            <select class="action-select">
+                <option value="">Select Action</option>
+                <option value="page_view">Page View</option>
+                <option value="click">Click</option>
+            </select>
+            <select class="required-select">
+                <option value="true">Required: True</option>
+                <option value="false">Required: False</option>
+            </select>
+            <input type="text" placeholder="Button (optional)" class="button-name" />
+            <button class="add-param-button">Add Parameter</button>
+            <button class="remove-button">Remove Step</button>
+            <div class="params-container"></div>
         `;
-        step.style.left = `${x}px`;
-        step.style.top = `${y}px`;
         
-        canvasContainer.appendChild(step);
-        steps.push(step);
+        stepsContainer.appendChild(stepBox);
         
-        makeStepDraggable(step);
-        setupHandles(step);
-        return step;
-    }
-
-    // Make step draggable
-    function makeStepDraggable(step) {
-        let offsetX, offsetY;
-        
-        step.addEventListener('mousedown', function(e) {
-            if (e.target.classList.contains('handle')) return;
-            
-            offsetX = e.clientX - step.offsetLeft;
-            offsetY = e.clientY - step.offsetTop;
-            draggedElement = step;
-            
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+        // Add event listeners for buttons
+        stepBox.querySelector('.remove-button').addEventListener('click', function() {
+            stepsContainer.removeChild(stepBox);
+            updateStepNumbers(); // Update step numbers after removal
+            updateConnectors();
         });
 
-        function onMouseMove(e) {
-            if (!draggedElement) return;
-            
-            const x = e.clientX - offsetX;
-            const y = e.clientY - offsetY;
-            
-            draggedElement.style.left = `${x}px`;
-            draggedElement.style.top = `${y}px`;
-            
-            updateConnections();
-        }
-
-        function onMouseUp() {
-            draggedElement = null;
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-        }
-    }
-
-    // Setup connection handles
-    function setupHandles(step) {
-        const handles = step.querySelectorAll('.handle');
-        
-        handles.forEach(handle => {
-            handle.addEventListener('mousedown', function(e) {
-                e.stopPropagation();
-                selectedHandle = handle;
-                drawingLine = true;
-                
-                const rect = handle.getBoundingClientRect();
-                const x = rect.left + rect.width / 2 - canvasContainer.offsetLeft;
-                const y = rect.top + rect.height / 2 - canvasContainer.offsetTop;
-                
-                tempLine = createLine(x, y, x, y);
-                canvas.appendChild(tempLine);
+        stepBox.querySelector('.add-param-button').addEventListener('click', function() {
+            const paramInput = document.createElement('div');
+            paramInput.innerHTML = `
+                <input type="text" placeholder="Key" class="param-key" />
+                <input type="text" placeholder="Value" class="param-value" />
+                <button class="remove-param-button">Delete</button>
+            `;
+            paramInput.querySelector('.remove-param-button').addEventListener('click', function() {
+                paramInput.remove();
             });
+            stepBox.querySelector('.params-container').appendChild(paramInput);
+        });
+
+        stepBox.addEventListener('mousedown', function() {
+            updateConnectors();
+        });
+        
+        updateConnectors();
+    }
+
+    // Update step numbers
+    function updateStepNumbers() {
+        const stepBoxes = Array.from(stepsContainer.children);
+        stepBoxes.forEach((step, index) => {
+            step.querySelector('.title').textContent = `Step ${index + 1}`;
         });
     }
 
-    // Create SVG line
-    function createLine(x1, y1, x2, y2) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', x1);
-        line.setAttribute('y1', y1);
-        line.setAttribute('x2', x2);
-        line.setAttribute('y2', y2);
-        line.setAttribute('stroke', '#666');
-        line.setAttribute('stroke-width', '2');
-        return line;
-    }
+    // Update connectors between steps
+    function updateConnectors() {
+        connectorsCanvas.innerHTML = ''; // Clear existing connectors
+        const stepBoxes = Array.from(stepsContainer.children);
+        stepBoxes.forEach((step, index) => {
+            if (index < stepBoxes.length - 1) {
+                const nextStep = stepBoxes[index + 1];
+                const startX = step.offsetLeft + step.offsetWidth / 2;
+                const startY = step.offsetTop + step.offsetHeight;
+                const endX = nextStep.offsetLeft + nextStep.offsetWidth / 2;
+                const endY = nextStep.offsetTop;
 
-    // Update connections
-    function updateConnections() {
-        connections.forEach(conn => {
-            const startRect = conn.start.getBoundingClientRect();
-            const endRect = conn.end.getBoundingClientRect();
-            
-            const x1 = startRect.left + startRect.width / 2 - canvasContainer.offsetLeft;
-            const y1 = startRect.top + startRect.height / 2 - canvasContainer.offsetTop;
-            const x2 = endRect.left + endRect.width / 2 - canvasContainer.offsetLeft;
-            const y2 = endRect.top + endRect.height / 2 - canvasContainer.offsetTop;
-            
-            conn.line.setAttribute('x1', x1);
-            conn.line.setAttribute('y1', y1);
-            conn.line.setAttribute('x2', x2);
-            conn.line.setAttribute('y2', y2);
-        });
-    }
-
-    // Handle mouse move on canvas
-    canvasContainer.addEventListener('mousemove', function(e) {
-        if (!drawingLine || !tempLine) return;
-        
-        const x = e.clientX - canvasContainer.offsetLeft;
-        const y = e.clientY - canvasContainer.offsetTop;
-        
-        tempLine.setAttribute('x2', x);
-        tempLine.setAttribute('y2', y);
-    });
-
-    // Handle mouse up on canvas
-    canvasContainer.addEventListener('mouseup', function(e) {
-        if (!drawingLine) return;
-        
-        const target = e.target;
-        if (target.classList.contains('handle') && target !== selectedHandle) {
-            const startHandle = selectedHandle;
-            const endHandle = target;
-            
-            if ((startHandle.classList.contains('output') && endHandle.classList.contains('input')) ||
-                (startHandle.classList.contains('input') && endHandle.classList.contains('output'))) {
-                connections.push({
-                    start: startHandle,
-                    end: endHandle,
-                    line: tempLine
-                });
-                updateConnections();
-                tempLine = null;
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', startX);
+                line.setAttribute('y1', startY);
+                line.setAttribute('x2', endX);
+                line.setAttribute('y2', endY);
+                line.classList.add('connector');
+                connectorsCanvas.appendChild(line);
             }
-        }
-        
-        if (tempLine) {
-            tempLine.remove();
-            tempLine = null;
-        }
-        
-        drawingLine = false;
-        selectedHandle = null;
-    });
-
-    // Make toolbar items draggable
-    document.querySelectorAll('.toolbar-item').forEach(item => {
-        item.addEventListener('dragstart', function(e) {
-            e.dataTransfer.setData('text/plain', item.dataset.type);
         });
-        
-        item.setAttribute('draggable', true);
-    });
+    }
 
-    // Handle drag and drop on canvas
-    canvasContainer.addEventListener('dragover', function(e) {
-        e.preventDefault();
-    });
-
-    canvasContainer.addEventListener('drop', function(e) {
-        e.preventDefault();
-        const type = e.dataTransfer.getData('text/plain');
-        const x = e.clientX - canvasContainer.offsetLeft;
-        const y = e.clientY - canvasContainer.offsetTop;
-        createStepNode(type, x, y);
+    // Handle new step button click
+    document.getElementById('newStepButton').addEventListener('click', function() {
+        createStepBox();
     });
 
     // Save journey
     document.getElementById('saveJourney').addEventListener('click', function() {
+        const journeyName = document.getElementById('journeyName').value; // Get journey name
         const journeyData = {
-            steps: steps.map(step => ({
-                id: step.dataset.stepId,
-                type: step.querySelector('.type').textContent,
-                position: {
-                    x: parseInt(step.style.left),
-                    y: parseInt(step.style.top)
-                }
-            })),
-            connections: connections.map(conn => ({
-                from: conn.start.closest('.step-node').dataset.stepId,
-                to: conn.end.closest('.step-node').dataset.stepId
+            name: journeyName, // Include journey name
+            steps: Array.from(stepsContainer.children).map((step, index) => ({
+                stepNumber: index + 1, // Include step number
+                stepName: step.querySelector('.step-name').value,
+                pageName: step.querySelector('.page-name').value,
+                action: step.querySelector('.action-select').value,
+                required: step.querySelector('.required-select').value,
+                button: step.querySelector('.button-name').value,
+                params: Array.from(step.querySelectorAll('.params-container div')).map(param => ({
+                    key: param.querySelector('.param-key').value,
+                    value: param.querySelector('.param-value').value
+                }))
             }))
         };
 
